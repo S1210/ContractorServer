@@ -17,7 +17,6 @@ namespace Server.Models
         }
         public User()
         {
-
         }
     }
 }

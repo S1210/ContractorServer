@@ -26,7 +26,7 @@ namespace ContractorServer.Commands
             return canExecute == null || canExecute(parameter);
         }
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
             execute(parameter);
         }

@@ -3,19 +3,51 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ContractorServer"
+        xmlns:local="clr-namespace:ContractorServer" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ToolBar>
-            <Button x:Name="btnAddUser" Content="Добавить" Command="{Binding AddUserCommand}"/>
-            <Button x:Name="btnDeleteUser" Content="Удалить" Command="{Binding DeleteUserCommand}"/>
-            <Button x:Name="btnSave" Content="Сохранить" Command="{Binding SaveCommand}"/>
+            <Button x:Name="btnAddUser" Content="{materialDesign:PackIcon Kind=Add}" Command="{Binding AddUserCommand}" ToolTip="Добавить">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Users}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button x:Name="btnDeleteUser" Content="{materialDesign:PackIcon Kind=Delete}" Command="{Binding DeleteUserCommand}"
+                    CommandParameter="{Binding SelectUser}" ToolTip="Удалить" IsEnabled="{Binding ElementName=gridUsers, Path=SelectedItems.Count}"
+                    Style="{StaticResource MaterialDesignIconForegroundButton}"/>
+            <Button x:Name="btnSave" Content="{materialDesign:PackIcon Kind=ContentSave}" Command="{Binding SaveCommand}" ToolTip="Сохранить"
+                    CommandParameter="{Binding ElementName=Snackbar}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Users}" Value="{x:Null}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </ToolBar>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Users}" />
+        <DataGrid x:Name="gridUsers" Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectUser}" AutoGenerateColumns="False"
+                  CanUserAddRows="False" CanUserDeleteRows="False" SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Логин" Binding="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+                <DataGridTextColumn Header="Пароль" Binding="{Binding Pass, UpdateSourceTrigger=PropertyChanged}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <materialDesign:Snackbar Grid.Row="2" MessageQueue="{materialDesign:MessageQueue}" x:Name="Snackbar" />
     </Grid>
 </Window>
