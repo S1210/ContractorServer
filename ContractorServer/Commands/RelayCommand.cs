@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ContractorServer.Commands
@@ -28,7 +29,7 @@ namespace ContractorServer.Commands
 
         public async void Execute(object parameter)
         {
-            execute(parameter);
+            await Task.Run(() => execute(parameter));
         }
     }
 }

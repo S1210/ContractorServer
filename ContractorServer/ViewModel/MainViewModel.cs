@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace ContractorServer.ViewModel
 {
@@ -31,7 +32,7 @@ namespace ContractorServer.ViewModel
 
         private ObservableCollection<User> GetUsersAsync()
         {
-            HttpResponseMessage response = client.GetAsync(url).Result;
+            var response = client.GetAsync(url).Result;
             ObservableCollection<User> users = null;
             if (response.IsSuccessStatusCode)
             {
@@ -51,9 +52,12 @@ namespace ContractorServer.ViewModel
                     (addUserCommand = new RelayCommand(obj =>
                     {
                         var response = client.PostAsJsonAsync(url, new User()).Result;
-                        if (response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate 
                         {
-                            Users.Add(JsonConvert.DeserializeObject<User>(response.Content.ReadAsStringAsync().Result));
+                            Users.Add(JsonConvert.DeserializeObject<User>(response.Content.ReadAsStringAsync().Result));                                
+                        }); 
                         }
                         else
                         {
@@ -78,7 +82,10 @@ namespace ContractorServer.ViewModel
                                 var response = client.DeleteAsync(url + Convert.ToString(user.Id)).Result;
                                 if (response.IsSuccessStatusCode)
                                 {
-                                    Users.Remove(user);
+                                    Application.Current.Dispatcher.Invoke(delegate
+                                    {
+                                        Users.Remove(user);
+                                    });
                                 }
                                 else
                                 {
@@ -105,9 +112,12 @@ namespace ContractorServer.ViewModel
                             }
                         }
                         Snackbar snackbar = obj as Snackbar;
-                        var messageQueue = snackbar.MessageQueue;
-                        var message = "Сохранено";
-                        Task.Factory.StartNew(() => messageQueue.Enqueue(message));
+                        snackbar.Dispatcher.Invoke(delegate
+                        {
+                            var messageQueue = snackbar.MessageQueue;
+                            var message = "Сохранено";
+                            Task.Factory.StartNew(() => messageQueue.Enqueue(message));
+                        });
                     }));
             }
         }
