@@ -1,0 +1,1 @@
+Для работы программы разместить файлы из папки bd по адресу C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA
